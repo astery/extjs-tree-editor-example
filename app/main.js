@@ -1,5 +1,5 @@
-define(['extjs', './document', './document_root', './document_button_destroy', './document_button_append_child', './document_pointer', './document_form'],
-function (Ext, Document, DocumentRoot, DocumentButtonDestroy, DocumentButtonAppendChild, DocumentPointer, DocumentForm) {
+define(['extjs', './document', './document_root', './document_button_destroy', './document_button_append_child', './document_pointer', './document_form', './document_tree'],
+function (Ext, Document, DocumentRoot, DocumentButtonDestroy, DocumentButtonAppendChild, DocumentPointer, DocumentForm, DocumentTree) {
   var root = new DocumentRoot();
   var doc1 = new Document({ title: 'Object 1' });
   var doc2 = new Document({ title: 'Object 2' });
@@ -8,16 +8,9 @@ function (Ext, Document, DocumentRoot, DocumentButtonDestroy, DocumentButtonAppe
   root.appendChild(doc2);
   doc1.appendChild(doc11);
 
-  var current_document = new DocumentPointer(doc11);
+  var current_document = new DocumentPointer(doc1);
 
-  var tree = new Ext.tree.TreePanel({
-    root: root,
-    listeners: {
-      click: function(document) {
-        current_document.replaceWith(document);
-      }
-    }
-  });
+  var tree = new DocumentTree({ root: root, document_pointer: current_document });
 
   var button_destroy = new DocumentButtonDestroy({ document_pointer: current_document });
   var button_append_child = new DocumentButtonAppendChild({ document_pointer: current_document });
@@ -42,4 +35,6 @@ function (Ext, Document, DocumentRoot, DocumentButtonDestroy, DocumentButtonAppe
       }
     }]
   });
+
+  current_document.fireEvent('change');
 });

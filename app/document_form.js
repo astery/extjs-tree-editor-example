@@ -46,9 +46,11 @@ define(['extjs'], function (Ext) {
       if (this.isActionCanBePerformed()) {
         this.title_field.enable();
         this.content_field.enable();
+        this.button_save.enable();
       } else {
         this.title_field.disable();
         this.content_field.disable();
+        this.button_save.disable();
       }
 
       this.title_field.setValue(this.dp.document.getTitle());
