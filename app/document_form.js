@@ -1,16 +1,67 @@
-define(['extjs'], function (Ext) {
-  return DocumentForm = Ext.extend(Ext.FormPanel, {
+define(['extjs', './document_button'], function (Ext, DocumentButton) {
+  var isEditable = function () {
+    return this.dp.document && this.dp.document.editable;
+  }
+
+  TitleField = Ext.extend(Ext.form.TextField, {
     constructor: function (config) {
-      this.title_field = new Ext.form.TextField({
+      config = Ext.apply({
         fieldLabel: 'Title',
         name: 'title',
         allowBlank: false
-      });
-      this.content_field = new Ext.form.TextArea({
+      }, config);
+      TitleField.superclass.constructor.call(this, config);
+      this.dp = config.document_pointer;
+    },
+    saveValue: function () {
+      this.dp.document.setTitle(this.getValue());
+    },
+    updateValue: function () {
+      this.setValue(this.dp.document.getTitle());
+    }
+  })
+
+  ContentField = Ext.extend(Ext.form.TextArea, {
+    constructor: function (config) {
+      config = Ext.apply({
         fieldLabel: 'Content',
         name: 'content'
+      }, config);
+      TitleField.superclass.constructor.call(this, config);
+      this.dp = config.document_pointer;
+    },
+    saveValue: function () {
+      this.dp.document.setContent(this.getValue());
+    },
+    updateValue: function () {
+      this.setValue(this.dp.document.getContent());
+    }
+  })
+
+  ButtonSave = Ext.extend(DocumentButton, {
+    constructor: function (config) {
+      ButtonSave.superclass.constructor.call(this, config);
+      this.setText('Save');
+      this.fields = config.fields;
+    },
+    isActionCanBePerformed: isEditable,
+    doAction: function () {
+      this.fields.forEach(function (field) {
+        field.saveValue();
       });
-      this.button_save = new Ext.Button({ text: 'Save' });
+    }
+  });
+
+  return DocumentForm = Ext.extend(Ext.FormPanel, {
+    constructor: function (config) {
+      this.dp = config.document_pointer;
+      this.dp.addListener('change', this.onDocumentPointerChange, this);
+
+      this.title_field = new TitleField({ document_pointer: this.dp });
+      this.content_field = new ContentField({ document_pointer: this.dp });
+      this.fields = [this.title_field, this.content_field];
+
+      this.button_save = new ButtonSave({ document_pointer: this.dp, fields: this.fields });
 
       config = Ext.apply({
         width: 360,
@@ -24,37 +75,28 @@ define(['extjs'], function (Ext) {
       config.buttons.push(this.button_save);
 
       DocumentForm.superclass.constructor.call(this, config);
-      this.dp = config.document_pointer;
-      this.dp.addListener('change', this.onDocumentPointerChange, this);
       this.button_save.addListener('click', this.onSaveClick, this);
       this.updateState();
-    },
-    onSaveClick: function () {
-      if (this.isActionCanBePerformed()) {
-        this.dp.document.setTitle(this.title_field.getValue());
-        this.dp.document.setContent(this.content_field.getValue());
-        this.updateState();
-      }
     },
     onDocumentPointerChange: function () {
       this.updateState();
     },
-    isActionCanBePerformed: function () {
-      return this.dp.document && this.dp.document.editable;
-    },
+    isActionCanBePerformed: isEditable,
     updateState: function () {
       if (this.isActionCanBePerformed()) {
-        this.title_field.enable();
-        this.content_field.enable();
+        this.everyFieldDo('enable');
         this.button_save.enable();
       } else {
-        this.title_field.disable();
-        this.content_field.disable();
+        this.everyFieldDo('disable');
         this.button_save.disable();
       }
 
-      this.title_field.setValue(this.dp.document.getTitle());
-      this.content_field.setValue(this.dp.document.getContent());
+      this.everyFieldDo('updateValue');
+    },
+    everyFieldDo: function (function_name) {
+      this.fields.forEach(function (field) {
+        field[function_name]();
+      });
     }
   });
 });
