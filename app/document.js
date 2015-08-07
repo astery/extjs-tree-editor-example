@@ -1,14 +1,13 @@
 define(['extjs'], function (Ext) {
-  return Document = Ext.extend(Object, {
-    constructor: function (config) {
-      Ext.apply(this, {
+  return Document = Ext.extend(Ext.tree.TreeNode, {
+    constructor: function (attributes) {
+      Ext.apply(this.attributes, attributes, {
         title: 'Object 1',
-        content: 'Replace with your content',
-      }, config);
-
-      this.tree_node = new Ext.tree.TreeNode({
-        text: this.title,
+        content: 'Replace with your content'
       });
+
+      Document.superclass.constructor.call(this, attributes);
+      this.text = this.attributes.title;
     }
   });
 });

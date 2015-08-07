@@ -1,53 +1,14 @@
-define(['extjs', './document'], function (Ext, Document) {
-  var doc = new Document({
-    title: 'Object 1i'
-  });
-
-  var tree_root = new Ext.tree.TreeNode({
-    text: 'Root',
-    expanded: true
-    // children: [{
-    //   text: 'Object 1',
-    //   icon: '',
-    //   children: [{
-    //     text: 'Object 1.1',
-    //     leaf: true
-    //   }, {
-    //     text: 'Object 1.2',
-    //     leaf: true
-    //   }, {
-    //     text: 'Object 1.3',
-    //     leaf: true
-    //   }]
-    // }, {
-    //   text: 'Object 2',
-    //   children: [{
-    //     text: 'Object 2.1',
-    //     leaf: true
-    //   }, {
-    //     text: 'Object 2.2',
-    //     leaf: true
-    //   }, {
-    //     text: 'Object 2.3',
-    //     leaf: true
-    //   }]
-    // }, {
-    //   text: 'Object 3',
-    //   leaf: true
-    // }]
-  });
-
-  tree_root.appendChild(doc.tree_node);
+define(['extjs', './document', './document_root'], function (Ext, Document, DocumentRoot) {
+  var root = new DocumentRoot();
+  var doc1 = new Document({ title: 'Object 1' });
+  var doc2 = new Document({ title: 'Object 2' });
+  var doc11 = new Document({ title: 'Object 1.1' });
+  root.appendChild(doc1);
+  root.appendChild(doc2);
+  doc1.appendChild(doc11);
 
   var tree = new Ext.tree.TreePanel({
-      useArrows: true,
-      autoScroll: true,
-      animate: true,
-      enableDD: true,
-      containerScroll: true,
-      border: false,
-      loader: new Ext.tree.TreeLoader(),
-      root: tree_root,
+      root: root,
       listeners: {
           click: function(n) {
               Ext.Msg.alert('Navigation Tree Click', 'You clicked: "' + n.attributes.text + '"');
