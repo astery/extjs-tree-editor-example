@@ -7,13 +7,14 @@ define(['extjs'], function (Ext) {
       });
 
       Document.superclass.constructor.call(this, attributes);
-      this.text = this.attributes.title;
+      this.setText(this.attributes.title);
       this.destroyable = true;
       this.appendable = true;
       this.editable = true;
     },
     setTitle: function (title) {
       this.attributes.title = title;
+      this.setText(title);
     },
     getTitle: function () {
       return this.attributes.title;
