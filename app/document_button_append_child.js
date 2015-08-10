@@ -1,4 +1,4 @@
-define(['extjs', './document', './document_button'], function (Ext, Document, DocumentButton) {
+define(['extjs', './document_button'], function (Ext, DocumentButton) {
   return DocumentButtonAppendChild = Ext.extend(DocumentButton, {
     constructor: function (config) {
       DocumentButtonAppendChild.superclass.constructor.call(this, config);
@@ -8,9 +8,11 @@ define(['extjs', './document', './document_button'], function (Ext, Document, Do
       return this.dp.document && this.dp.document.appendable;
     },
     doAction: function () {
-      var new_doc = new Document();
-      this.dp.document.appendChild(new_doc);
-      this.dp.replaceWith(new_doc);
+      require(['app/document'], function (Document) {
+        var new_doc = new Document();
+        this.dp.document.appendChild(new_doc);
+        this.dp.replaceWith(new_doc);
+      }.bind(this));
     }
   });
 });
