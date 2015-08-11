@@ -1,20 +1,54 @@
-define(['extjs', './document_pointer', './document_button_append_child', './document_button_destroy'], function (Ext, DocumentPointer, DocumentButtonAppendChild, DocumentButtonDestroy) {
+define(['extjs', './document_pointer', './document_button_decl', './document_button_append_child', './document_button_destroy'], function (Ext, DocumentPointer, DocumentButtonMixin, DocumentButtonAppendChild, DocumentButtonDestroy) {
+  var MenuItem = Ext.extend(Ext.menu.Item, DocumentButtonMixin);
+
+  var MenuItemAppendChild = Ext.extend(MenuItem, {
+    constructor: function (config) {
+      MenuItemAppendChild.superclass.constructor.call(this, config);
+      this.setDocumentPointer(config.document_pointer);
+      this.setText('Add child');
+    },
+    isActionCanBePerformed: function () {
+      return this.dp.isAppendable();
+    },
+    doAction: function () {
+      this.dp.appendNewChild();
+      this.parentMenu.hide();
+    }
+  });
+
+  MenuItemDestroy = Ext.extend(MenuItem, {
+    constructor: function (config) {
+      MenuItemDestroy.superclass.constructor.call(this, config);
+      this.setDocumentPointer(config.document_pointer);
+      this.setText('Destroy');
+    },
+    isActionCanBePerformed: function () {
+      return this.dp.isDestroyable();
+    },
+    doAction: function () {
+      this.dp.destroyDocument();
+      this.parentMenu.hide();
+    }
+  });
+
   return Document = Ext.extend(Ext.tree.TreeNode, {
     constructor: function (attributes) {
-      Ext.apply(this.attributes, attributes, {
+      attributes = attributes || {};
+      Ext.applyIf(attributes, {
         title: 'Object 1',
-        content: 'Replace with your content'
+        content: 'Replace with your content',
+        destroyable: true,
+        appendable: true,
+        editable: true
       });
 
       Document.superclass.constructor.call(this, attributes);
       this.setText(this.attributes.title);
-      this.destroyable = true;
-      this.appendable = true;
-      this.editable = true;
+
       this.contextMenu = new Ext.menu.Menu({
         items: [
-          new DocumentButtonAppendChild({ document_pointer: new DocumentPointer(this) }),
-          new DocumentButtonDestroy({ document_pointer: new DocumentPointer(this) }),
+          new MenuItemAppendChild({ document_pointer: new DocumentPointer(this) }),
+          new MenuItemDestroy({ document_pointer: new DocumentPointer(this) }),
         ]
       });
       this.addListener('contextmenu', this.showMenu, this);

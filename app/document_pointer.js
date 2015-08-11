@@ -14,9 +14,31 @@ define(['extjs'], function (Ext) {
       this.document = this.document.parentNode;
       this.fireEvent('change');
     },
+    appendNewChildWithReplace: function () {
+      var new_doc = new Document();
+      this.document.appendChild(new_doc);
+      this.replaceWith(new_doc);
+    },
+    appendNewChild: function () {
+      this.document.appendChild(new Document());
+    },
+    destroyDocument: function () {
+      var old_doc = this.document;
+      this.replaceWithParent();
+      old_doc.destroy();
+    },
     onChange: function () {
       this.document.select();
       this.document.expand();
+    },
+    isAppendable: function () {
+      return this.document.attributes.appendable;
+    },
+    isEditable: function () {
+      return this.document.attributes.editable;
+    },
+    isDestroyable: function () {
+      return this.document.attributes.destroyable;
     }
   });
 });

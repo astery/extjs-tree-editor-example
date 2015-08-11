@@ -1,6 +1,6 @@
 define(['extjs', './document_button'], function (Ext, DocumentButton) {
   var isEditable = function () {
-    return this.dp.document && this.dp.document.editable;
+    return this.dp.isEditable();
   }
 
   TitleField = Ext.extend(Ext.form.TextField, {

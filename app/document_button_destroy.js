@@ -5,12 +5,10 @@ define(['extjs', './document_button'], function (Ext, DocumentButton) {
       this.setText('Destroy');
     },
     isActionCanBePerformed: function () {
-      return this.dp.document && this.dp.document.destroyable;
+      return this.dp.isDestroyable();
     },
     doAction: function () {
-      var old_doc = this.dp.document;
-      this.dp.replaceWithParent();
-      old_doc.destroy();
+      this.dp.destroyDocument();
     }
   });
 });
